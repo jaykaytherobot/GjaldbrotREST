@@ -20,12 +20,7 @@
                 <input type="time" name="rTime" id="time" th:field="*{time}">
                 <p>Type:</p>
                 <select id="type" name="rType" th:field="*{type}">
-                    <option th:value=0>Matur</option>
-                    <option th:value=1>Fatnaður</option>
-                    <option th:value=2>Veitingar</option>
-                    <option th:value=3>Skemmtun</option>
-                    <option th:value=4>Áfengi</option>
-                    <option th:value=5>Tóbak</option>
+                    <option th:each="receiptType : ${userReceiptTypes}" th:value=${receiptType.id} th:text="${receiptType.name}"></option>
                 </select>
                 <p>Amount:</p>
                 <input type="number" name="rAmount" id="amount" th:field="*{amount}">

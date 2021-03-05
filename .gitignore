@@ -65,3 +65,5 @@ build/
 
 ## node modules ##
 /src/main/resources/static/js/node_modules/*
+## Database ##
+/src/main/resources/Database/*

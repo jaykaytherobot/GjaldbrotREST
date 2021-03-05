@@ -2,20 +2,16 @@ package is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.Date;
-import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.ReceiptType.Type;
 
 /**
  * Klasi notaður til þess að geyma gögn úr ThymeLeaf á strengjaformi,
  * Svo gögn geti verið rétt parsed þegar þau eru sett í gagnagrunn
  */
-@Entity
+
 public class ReceiptHost {
-    @Id
-    private int id;
     private String date;
     private String time;
     private String type;
@@ -82,8 +78,7 @@ public class ReceiptHost {
         LocalTime t = LocalTime.parse(this.time);
         r.setTime(t);
         r.setAmount(this.amount);
-        Type rType = ReceiptType.intToType(Integer.parseInt(type));
-        r.setType(rType);
+        r.setType(Integer.parseInt(type));
         return r;
     }
 }

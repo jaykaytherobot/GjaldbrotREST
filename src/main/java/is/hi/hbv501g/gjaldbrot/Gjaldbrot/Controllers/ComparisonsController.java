@@ -1,7 +1,6 @@
 package is.hi.hbv501g.gjaldbrot.Gjaldbrot.Controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.JSONWriter;
 import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.Receipt;
 import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.User;
 import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Services.ReceiptService;
@@ -15,10 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalTime;
 import java.util.*;
-
-import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.ReceiptType.Type;
 
 import javax.servlet.http.HttpSession;
 
@@ -39,14 +35,14 @@ public class ComparisonsController {
     * */
     private String writeReceipts(List<Receipt> receipts){
         int matur = 0, fot=0, afengi=0, tobak=0, skemmtun=0, veitingar=0;
-        for (Receipt r : receipts) {
+        /*for (Receipt r : receipts) {
             if (r.getType() == Type.MATARINNKAUP) matur += r.getAmount();
             else if (r.getType() == Type.FATNADUR) fot += r.getAmount();
             else if (r.getType() == Type.AFENGI) afengi += r.getAmount();
             else if (r.getType() == Type.TOBAK) tobak += r.getAmount();
             else if (r.getType() == Type.SKEMMTUN_OG_AFTREYING) skemmtun += r.getAmount();
             else if (r.getType() == Type.VEITINGASTADUR) veitingar += r.getAmount();
-        }
+        }*/
         String JSON = String.format("{\"matur\":%d,\"fatnadur\":%d,\"afengi\":%d,\"tobak\":%d,\"skemmtun\":%d,\"veitingar\":%d}",
                 matur,fot,afengi,tobak,skemmtun,veitingar);
         System.out.println(JSON);
@@ -60,9 +56,10 @@ public class ComparisonsController {
 
         User sessionUser = (User) session.getAttribute("LoggedInUser");
         if (sessionUser != null) {
-            User u = userService.getUserByName(sessionUser.getuName());
+            User user = userService.findByUsername(sessionUser.getUsername());
+            List<Receipt> receipts = receiptService.getReceiptsByMonth(user, df.format(dateobj));
+            System.out.println(JSONWriter.writeReceipts(user, receipts));
 
-            List<Receipt> receipts = receiptService.getReceiptsByMonth(u, df.format(dateobj));
             model.addAttribute("receipts", writeReceipts(receipts));
             return "overView";
         }
@@ -108,12 +105,12 @@ public class ComparisonsController {
                 System.out.println("something went wrong");
                 break;
             }
-            if (_r.getType() == Type.MATARINNKAUP) matur[monthIndex] += _r.getAmount();
+            /*if (_r.getType() == Type.MATARINNKAUP) matur[monthIndex] += _r.getAmount();
             else if (_r.getType() == Type.FATNADUR) fatnadur[monthIndex] += _r.getAmount();
             else if (_r.getType() == Type.AFENGI) afengi[monthIndex] += _r.getAmount();
             else if (_r.getType() == Type.TOBAK) tobak[monthIndex] += _r.getAmount();
             else if (_r.getType() == Type.SKEMMTUN_OG_AFTREYING) skemmtun[monthIndex] += _r.getAmount();
-            else if (_r.getType() == Type.VEITINGASTADUR) veitingar[monthIndex] += _r.getAmount();
+            else if (_r.getType() == Type.VEITINGASTADUR) veitingar[monthIndex] += _r.getAmount();*/
         }
 
         DateFormat df = new SimpleDateFormat("yyyy-MM");
@@ -168,10 +165,10 @@ public class ComparisonsController {
 
         User sessionUser = (User) session.getAttribute("LoggedInUser");
         if (sessionUser != null) {
-            User u = userService.getUserByName(sessionUser.getuName());
+            User user = userService.findByUsername(sessionUser.getUsername());
 
-            List<Receipt> receipts = receiptService.getReceipts(u);
-
+            List<Receipt> receipts = receiptService.getReceiptByUser(user);
+            JSONWriter.writeComparisonData(user, receipts);
             model.addAttribute("compReceipt", writeComparisonData(receipts));
             return "comparison";
         }

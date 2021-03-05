@@ -1,4 +1,4 @@
-package is.hi.hbv601G.Gjaldbrot.security;
+package is.hi.hbv501g.gjaldbrot.Gjaldbrot.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,14 +29,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             new AntPathRequestMatcher("/api/**")
     );
 
-    AuthenticationProvider provider;
+    is.hi.hbv501g.gjaldbrot.Gjaldbrot.security.AuthenticationProvider provider;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    public SecurityConfiguration(final AuthenticationProvider authenticationProvider) {
+    public SecurityConfiguration(final is.hi.hbv501g.gjaldbrot.Gjaldbrot.security.AuthenticationProvider authenticationProvider) {
         super();
         this.provider=authenticationProvider;
     }
@@ -71,8 +66,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    AuthenticationFilter authenticationFilter() throws Exception {
-        final AuthenticationFilter filter = new AuthenticationFilter(PROTECTED_URLS);
+    is.hi.hbv501g.gjaldbrot.Gjaldbrot.security.AuthenticationFilter authenticationFilter() throws Exception {
+        final is.hi.hbv501g.gjaldbrot.Gjaldbrot.security.AuthenticationFilter filter = new is.hi.hbv501g.gjaldbrot.Gjaldbrot.security.AuthenticationFilter(PROTECTED_URLS);
         filter.setAuthenticationManager(authenticationManager());
         //filter.setAuthenticationSuccessHandler(successHandler());
         return filter;

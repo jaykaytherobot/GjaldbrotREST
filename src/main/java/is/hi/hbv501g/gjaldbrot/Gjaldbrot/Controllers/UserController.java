@@ -59,9 +59,9 @@ public class UserController {
         if(result.hasErrors()){
             return "signup";
         }
-        User exists = userService.findByUName(user.uName);
+        User exists = userService.findByUsername(user.getUsername());
         if(exists == null){
-            userService.save(user);
+            userService.signupUser(user);
         }
         return "login";
     }
@@ -93,8 +93,8 @@ public class UserController {
         User exists = userService.login(user);
         if(exists != null){
             session.setAttribute("LoggedInUser", user);
-            userService.getUserByName(user.getuName());
-            System.out.println(userService.getUserByName(user.getuName()));
+            userService.findByUsername(user.getUsername());
+            System.out.println(userService.findByUsername(user.getUsername()));
             return "redirect:/mainPage";
         }
         return "redirect:/";

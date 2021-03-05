@@ -1,12 +1,15 @@
-package is.hi.hbv601G.Gjaldbrot.security;
+package is.hi.hbv501g.gjaldbrot.Gjaldbrot.security;
 
-import is.hi.hbv601G.Gjaldbrot.Services.UserService;
+import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -15,6 +18,11 @@ import java.util.Optional;
 public class AuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
     @Autowired
     UserService userService;
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) throws AuthenticationException {

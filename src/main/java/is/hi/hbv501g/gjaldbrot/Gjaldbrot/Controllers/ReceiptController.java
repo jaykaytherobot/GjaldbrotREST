@@ -5,12 +5,12 @@ import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.ReceiptHost;
 import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.ReceiptType;
 import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.User;
 import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Services.ReceiptService;
+import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Services.ReceiptTypeService;
 import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,6 +25,7 @@ import java.util.List;
 public class ReceiptController {
     private ReceiptService receiptService;
     private UserService userService;
+    private ReceiptTypeService receiptTypeService;
 
     /**
      * ReceiptController calls service that need to be used with entity receipt.
@@ -32,9 +33,10 @@ public class ReceiptController {
      * @param userService gets the user service class.
      */
     @Autowired
-    public ReceiptController(ReceiptService receiptService, UserService userService){
+    public ReceiptController(ReceiptService receiptService, UserService userService, ReceiptTypeService receiptTypeService){
         this.receiptService = receiptService;
         this.userService = userService;
+        this.receiptTypeService = receiptTypeService;
     }
 
     /**
@@ -49,7 +51,10 @@ public class ReceiptController {
         User sessionUser = (User) session.getAttribute("LoggedInUser");
         model.addAttribute("receipt", receipt);
         if(sessionUser != null) {
+            User user = userService.findByUsername(sessionUser.getUsername());
+            List<ReceiptType> receiptTypes = user.getReceiptTypes();
             model.addAttribute("userId", sessionUser.getId());
+            model.addAttribute("userReceiptTypes", receiptTypes);
             return "addReceipt";
         }
         return "redirect:/";
@@ -66,13 +71,13 @@ public class ReceiptController {
     @RequestMapping(value = "/addReceipt", method = RequestMethod.POST)
     public String addReceiptPost(@Valid ReceiptHost receipt, BindingResult result, Model model, HttpSession session) throws Exception{
         User sessionUser = (User) session.getAttribute("LoggedInUser");
-        Receipt newReceipt = receipt.createReceipt();
-        newReceipt.setUser(userService.getUserByName(sessionUser.getuName()));
-        receiptService.add(newReceipt);
         if(sessionUser != null){
-            List<Receipt> receipts = receiptService.getReceipts(userService.getUserByName(sessionUser.getuName()));
-            model.addAttribute("receipts", receipts);
-            return "getAllReceipts";
+            User user = userService.findByUsername(sessionUser.getUsername());
+            System.out.println(receipt);
+            Receipt newReceipt = receipt.createReceipt();
+            user.addReceipt(newReceipt);
+            userService.save(user);
+            return "redirect:/allReceipts";
         }
         return "redirect:/";
     }
@@ -86,9 +91,10 @@ public class ReceiptController {
     @RequestMapping(value = "/allReceipts", method = RequestMethod.GET)
     public String receiptsGet(HttpSession session, Model model) {
         User sessionUser = (User) session.getAttribute("LoggedInUser");
-        System.out.println(""+sessionUser);
         if(sessionUser != null){
-            List<Receipt> receipts = receiptService.getReceipts(userService.getUserByName(sessionUser.getuName()));
+            User user = userService.findByUsername(sessionUser.getUsername());
+            List<Receipt> receipts = receiptService.getReceiptByUser(user);
+            System.out.println(receipts.size());
             model.addAttribute("receipts", receipts);
             return "getAllReceipts";
         }
@@ -97,39 +103,57 @@ public class ReceiptController {
 
     @RequestMapping(value = "/changeReceipt/{id}", method = RequestMethod.GET)
     private String changeReceiptGET(@PathVariable("id") long id, Model model, ReceiptHost newReceipt, HttpSession session) {
-        session.setAttribute("changedReceipt", receiptService.getReceiptById(id));
-        model.addAttribute("newReceipt", newReceipt);
-        Receipt r = receiptService.getReceiptById(id);
-        model.addAttribute("oldReceiptType", ReceiptType.typeToInt(r.getType()));
-        model.addAttribute("oldReceiptAmount", r.getAmount());
+        User sessionUser = (User) session.getAttribute("LoggedInUser");
+        if(sessionUser != null) {
+            //get receipt of user
+            User user = userService.findByUsername(sessionUser.getUsername());
+            Receipt receipt = receiptService.getReceiptById(id);
+            // þarf check að user eigi í raun þessa kvittun
 
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            session.setAttribute("changedReceipt", receiptService.getReceiptById(id));
+            model.addAttribute("newReceipt", newReceipt);
+            Receipt r = receiptService.getReceiptById(id);
+            model.addAttribute("oldReceiptType", r.getType());
+            model.addAttribute("oldReceiptAmount", r.getAmount());
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
-        model.addAttribute("oldReceiptDate", df.format(r.getDate()));
+            model.addAttribute("oldReceiptDate", df.format(r.getDate()));
+            model.addAttribute("userReceiptTypes", user.getReceiptTypes());
 
-        return "changeReceipt";
+            return "changeReceipt";
+            //return "redirect:/allReceipts";
+        }
+        return "redirect:/";
     }
 
     @RequestMapping(value = "/changeReceipt", method = RequestMethod.POST)
     private String changeReceiptPOST(@Valid ReceiptHost newReceipt, BindingResult result, Model model, HttpSession session){
-        Receipt oldReceipt = (Receipt) session.getAttribute("changedReceipt");
-        receiptService.change(oldReceipt, newReceipt);
-        return "redirect:/allReceipts";
+        User sessionUser = (User) session.getAttribute("LoggedInUser");
+        if(sessionUser != null) {
+            // TODO það þarf check að notandi eigi örugglega kvittunina sem er að breyta
+            Receipt oldReceipt = (Receipt) session.getAttribute("changedReceipt");
+            receiptService.change(oldReceipt, newReceipt);
+            return "redirect:/allReceipts";
+        }
+        return "redirect:/";
     }
 
     @RequestMapping(value="/deleteReceipt/{id}", method = RequestMethod.GET)
-    public String deleteReceipt(@PathVariable("id") long id, Model model){
-        System.out.println("TestDelete");
-        Receipt receipt = receiptService.findById(id).orElseThrow(()-> new IllegalArgumentException("Invalid Receipt ID"));
-        receiptService.delete(receipt);
-        model.addAttribute("receipt", receiptService.findAll());
-        return "redirect:/allReceipts";
+    public String deleteReceipt(@PathVariable("id") long id, Model model, HttpSession session){
+        User sessionUser = (User) session.getAttribute("LoggedInUser");
+        if(sessionUser != null) {
+            // TODO það þarf check að notandi eigi örugglega kvittunina sem er verið að eyða
+            Receipt receipt = receiptService.findById(id).orElseThrow(()-> new IllegalArgumentException("Invalid Receipt ID"));
+            receiptService.delete(receipt);
+            model.addAttribute("receipt", receiptService.findAll());
+            return "redirect:/allReceipts";
+        }
+        return "redirect:/";
     }
 
     @RequestMapping(value = "/savings", method = RequestMethod.GET)
     public String savingsGET(Model model){
         return "savings";
     }
-
 }
 

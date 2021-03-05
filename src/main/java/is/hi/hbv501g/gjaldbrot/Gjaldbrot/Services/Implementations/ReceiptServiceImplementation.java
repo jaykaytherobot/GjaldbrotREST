@@ -2,7 +2,6 @@ package is.hi.hbv501g.gjaldbrot.Gjaldbrot.Services.Implementations;
 
 import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.Receipt;
 import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.ReceiptHost;
-import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.ReceiptType;
 import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.User;
 import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Repositories.ReceiptRepository;
 import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Services.ReceiptService;
@@ -37,8 +36,8 @@ public class ReceiptServiceImplementation implements ReceiptService {
         repository.change(newReceipt.getAmount(), Integer.parseInt(newReceipt.getType()), newDate, oldReceipt.getId());
     }
 
-    public List<Receipt> getReceipts(User u) {
-        return repository.getUsersReceipts(u.getId());
+    public List<Receipt> getReceiptByUser(User u) {
+        return repository.findAllByUserId(u.getId());
     }
 
     public Receipt getReceiptById(long id) {
@@ -48,7 +47,7 @@ public class ReceiptServiceImplementation implements ReceiptService {
     public ArrayList<Receipt> getReceiptsByMonth(User u, String month){
         //month : yyyy-MM -> yyyy-MM-dd-
         String from = month+"-01 00:00:00.0";
-        String to = month+"-30 00:00:00.0";
+        String to = month+"-28 00:00:00.0";
 
         return (ArrayList<Receipt>) repository.getReceiptsOfMonth(u.getId(), from, to);
     }

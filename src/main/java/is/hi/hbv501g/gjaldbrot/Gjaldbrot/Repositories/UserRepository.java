@@ -7,13 +7,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     User save(User user);
     void delete(User user);
     List<User> findAll();
-    User findByUName(String uName);
+    Optional<User> findByUsername(String username);
+    Optional<User> findByToken(String token);
 
-    @Query(value = "Select * From User Where u_name = :userName", nativeQuery = true)
-    User getUserByName(@Param("userName") String uName);
+    @Query(value = "SELECT * FROM User Where username = :username and password = :password", nativeQuery = true)
+    Optional<User> login(@Param("username") String username, @Param("password") String password);
 }

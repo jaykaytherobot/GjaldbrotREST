@@ -1,119 +1,30 @@
 package is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.time.LocalTime;
 import java.util.Date;
-import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.ReceiptType.Type;
 
-@Entity
-@Table(name = "Receipt")
+@Entity(name = "Receipt")
+@Table(name = "receipt")
 public class Receipt implements Comparable<Receipt>{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @GeneratedValue
+    private Long id;
 
-    @ManyToOne
+    @JsonIgnore
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="user_id")
     private User user;
 
     private Date date;
     private LocalTime time;
-    private Type type;
+    private int type;
     private int amount;
 
-    /**
-     * getId
-     * @return id of receipt
-     */
-    public long getId() {
-        return id;
-    }
-
-    @Override
-    public String toString(){
-        return "" + id + "\n" + date + "\n" + time + "\n" + type + "\n" + amount;
-    }
     public Receipt() {
 
-    }
-
-    /**
-     * setUser(User user)
-     * @param user user entity to set
-     */
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    /**
-     *  setId(Long id)
-     * @param id id of receipt to set
-     */
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    /**
-     * getDate()
-     * @return date of receipt
-     */
-    public Date getDate() {
-        return date;
-    }
-
-    /**
-     * setDate(Date date)
-     * @param date date of receipt to set
-     */
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    /**
-     * getTime()
-     * @return time of the receipt
-     */
-    public LocalTime getTime() {
-        return time;
-    }
-
-    /**
-     * setTime(LocalTime time)
-     * @param time time to receipt set
-     */
-    public void setTime(LocalTime time) {
-        this.time = time;
-    }
-
-    /**
-     * getType()
-     * @return type of the receipt
-     */
-    public Type getType() {
-        return type;
-    }
-
-    /**
-     * setType(Type type)
-     * @param type type of receipt to set
-     */
-    public void setType(Type type) {
-        this.type = type;
-    }
-
-    /**
-     * getAmount()
-     * @return amount of the receipt
-     */
-    public int getAmount() {
-        return amount;
-    }
-
-    /**
-     * setAmount(int amount)
-     * @param amount amount of the receipt to set
-     */
-    public void setAmount(int amount) {
-        this.amount = amount;
     }
 
     /**
@@ -123,7 +34,7 @@ public class Receipt implements Comparable<Receipt>{
      * @param type type of the receipt
      * @param amount amount of the receipt
      */
-    public Receipt(Date date, LocalTime time, Type type, int amount) {
+    public Receipt(Date date, LocalTime time, int type, int amount) {
         this.date = date;
         this.time = time;
         this.type = type;
@@ -134,7 +45,76 @@ public class Receipt implements Comparable<Receipt>{
         this.amount = amount;
     }
 
+    /**
+     * getters and setters
+     */
+    public Long getId() {
+        return id;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public LocalTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalTime time) {
+        this.time = time;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
+
+    @Override
     public int compareTo(Receipt r) {
         return this.date.compareTo(r.getDate());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return id.equals(((Receipt) o).getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
+    @Override
+    public String toString(){
+        return "" + id.toString() + "\n" + date + "\n" + time + "\n" + type + "\n" + amount;
     }
 }

@@ -1,12 +1,10 @@
 package is.hi.hbv501g.gjaldbrot.Gjaldbrot.Repositories;
 
 import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.Receipt;
-import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.ReceiptType.Type;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -34,4 +32,5 @@ public interface ReceiptRepository extends JpaRepository<Receipt, Long> {
     @Query(value = "Select * From Receipt Where User_id = :user_id And Date >= :from And Date <= :to", nativeQuery = true)
     List<Receipt> getReceiptsOfMonth(@Param("user_id") long user_id, @Param("from") String from, @Param("to") String to);
 
+    List<Receipt> findAllByUserId(long user_id);
 }

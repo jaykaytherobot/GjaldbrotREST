@@ -24,17 +24,14 @@
             <input type="time" th:field="*{time}" th:value="${session.time}">
             <p>Type:</p>
             <select name="type" id="type">
-                <option th:selected="${oldReceiptType} == 0" th:value=0>Matur</option>
-                <option th:selected="${oldReceiptType} == 1" th:value=1>Fatnaður</option>
-                <option th:selected="${oldReceiptType} == 2" th:value=2>Veitingar</option>
-                <option th:selected="${oldReceiptType} == 3" th:value=3>Skemmtun</option>
-                <option th:selected="${oldReceiptType} == 4" th:value=4>Áfengi</option>
-                <option th:selected="${oldReceiptType} == 5" th:value=5>Tóbak</option>
+                <option th:each="receiptType : ${userReceiptTypes}" th:value=${receiptType.id} th:text="${receiptType.name}"></option>
             </select>
             <p>Amount:</p>
             <input type="number" name="amount" id="amount"  th:value="${oldReceiptAmount}">
             <input type="submit" value="Change" class="rmain__container__registerForm-submit">
         </form>
+
+
     </div>
     </main>
     <footer th:insert="fragments/footer.html :: footer"></footer>

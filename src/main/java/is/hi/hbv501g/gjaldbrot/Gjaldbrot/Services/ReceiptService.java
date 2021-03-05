@@ -12,7 +12,7 @@ public interface ReceiptService {
     Receipt add(Receipt receipt);
     void delete(Receipt receipt);
     void change(Receipt oldReceipt, ReceiptHost newReceipt);
-    List<Receipt> getReceipts(User u);
+    List<Receipt> getReceiptByUser(User u);
 
     Receipt getReceiptById(long id);
 

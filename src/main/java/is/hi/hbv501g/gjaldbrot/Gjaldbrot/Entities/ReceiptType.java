@@ -1,98 +1,66 @@
 package is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities;
-import java.awt.Color;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-/**
- * A small class containing an implementation of the enum Type, as well as a method for
- * color coding each type
- */
+import javax.persistence.*;
 
+@Entity(name = "ReceiptType")
+@Table(name = "receipttype")
 public class ReceiptType {
-    public enum Type{
-        MATARINNKAUP,
-        FATNADUR,
-        VEITINGASTADUR,
-        SKEMMTUN_OG_AFTREYING,
-        AFENGI,
-        TOBAK
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @JsonIgnore
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="user_id")
+    private User user;
+
+    private String name;
+
+    public ReceiptType() {
+
     }
 
-    /**
-     * A simple method providing colors for receipt types
-     * @param type is the receipt type
-     * @return color associated with receipt type
-     * @throws Exception if given type does not exist
-     */
-    public static Color TypeColor(Type type) throws Exception {
-        switch (type) {
-            case MATARINNKAUP:
-                return Color.BLUE;
-            case FATNADUR:
-                return Color.GREEN;
-            case VEITINGASTADUR:
-                return Color.YELLOW;
-            case SKEMMTUN_OG_AFTREYING:
-                return Color.RED;
-            case AFENGI:
-                return Color.PINK;
-            case TOBAK:
-                return Color.BLACK;
-            default:
-                break;
-        }
-        throw new Exception("Inputted type does not belong to enum Type");
+    public ReceiptType(User user, String name) {
+        this.user = user;
+        this.name = name;
     }
 
-    /**
-     * Einfalt fall sem leyfir heiltölum að vera túlkaðar sem Type
-     * @param i heiltala frá 1-6
-     * @return Type
-     */
-    public static Type intToType(int i){
-        switch (i){
-            case 0:
-                return Type.MATARINNKAUP;
-            case 1:
-                return Type.FATNADUR;
-            case 2:
-                return Type.VEITINGASTADUR;
-            case 3:
-                return Type.SKEMMTUN_OG_AFTREYING;
-            case 4:
-                return Type.AFENGI;
-            case 5:
-                return Type.TOBAK;
-            default:
-                break;
-        }
-        return null;
-    }
-    /**
-     * Einfalt fall sem túlkar type sem heiltölur
-     * @param t Type af type type
-     * @return i
-     */
-    public static int typeToInt(Type t){
-        switch (t){
-            case MATARINNKAUP:
-                return 0;
-            case FATNADUR:
-                return 1;
-            case VEITINGASTADUR:
-                return 2;
-            case SKEMMTUN_OG_AFTREYING:
-                return 3;
-            case AFENGI:
-                return 4;
-            case TOBAK:
-                return 5;
-            default:
-                break;
-        }
-        return 0;
+    public Long getId() {
+        return id;
     }
 
-    public static void main(String[] args){
-        System.out.println("Hello world");
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return id.equals(((ReceiptType) o).getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }
+

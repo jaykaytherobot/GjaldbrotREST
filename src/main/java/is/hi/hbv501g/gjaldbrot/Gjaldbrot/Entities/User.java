@@ -5,95 +5,121 @@ import javax.persistence.*;
 import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-@Entity
-@Table(name = "USER")
+@Entity(name = "User")
+@Table(name = "user")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @GeneratedValue
+    private Long id;
 
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Receipt> receipts;
 
-    public String uName;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReceiptType> receiptTypes;
 
-    public String password;
+    private String username;
+
+    private String password;
+
+    private String token;
+
 
     public User() {
+        receiptTypes = new ArrayList<ReceiptType>();
+    }
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
     }
 
     /**
-     * getId()
-     * @return users id
+     * Getters and setters
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    /**
-     * setId(long id)
-     * @param id sets users id
-     */
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-     * toString()
-     * @return values of the user (id, uName and password) as a string
-     */
-    @Override
-    public String toString() {
-        return ""+id+" "+uName+" "+password;
+    public String getUsername() {
+        return username;
     }
 
-    /**
-     * getuName()
-     * @return users username
-     */
-    public String getuName() {
-        return uName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    /**
-     * setuName(String uName)
-     * @param uName sets the users username
-     */
-    public void setuName(String uName) {
-        this.uName = uName;
-    }
-
-    /**
-     * getPassword()
-     * @return users password
-     */
     public String getPassword() {
         return password;
     }
 
-    /**
-     * setPassword(String password)
-     * @param password sets the users password
-     */
     public void setPassword(String password) {
         this.password = password;
     }
 
-    /**
-     * getReceipts()
-     * @return list of all receipt made by the user
-     */
     public List<Receipt> getReceipts() {return receipts;}
 
-    /**
-     * User(String uName, String password)
-     * @param uName sets the users username
-     * @param password sets the users password
-     */
-    public User(String uName, String password) {
-        this.uName = uName;
-        this.password = password;
+    public void setReceipts(List<Receipt> receipts) {this.receipts = receipts;}
+
+    public List<ReceiptType> getReceiptTypes() {return receiptTypes;}
+
+    public void setReceiptTypes(List<ReceiptType> receiptTypes) {this.receiptTypes = receiptTypes;}
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public void addReceipt(Receipt receipt) {
+        receipts.add(receipt);
+        receipt.setUser(this);
+    }
+
+    public void deleteReceipt(Receipt receipt) {
+        receipts.remove(receipt);
+        receipt.setUser(null);
+    }
+
+    public void addReceiptType(ReceiptType receiptType) {
+        receiptTypes.add(receiptType);
+        receiptType.setUser(this);
+    }
+
+    public void deleteReceiptType(ReceiptType receiptType) {
+        receiptTypes.remove(receiptType);
+        receiptType.setUser(null);
+    }
+
+    @Override
+    public String toString() {
+        return "{\n" +
+                "\tusername='"+username+"\'\n"+
+                "\tpassword='"+password+"\'\n"+
+                "}\n";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id == user.id &&
+                //receipts.equals(user.receipts) &&
+                username.equals(user.username) &&
+                password.equals(user.password);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
