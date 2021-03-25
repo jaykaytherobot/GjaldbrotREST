@@ -31,33 +31,41 @@ public class RESTReceiptController {
         return user.getReceipts().toString();
     }
 
-    //@GetMapping(value = "/api/user/receipt/:id",produces = "application/json")
+    // @GetMapping(value = "/api/user/receipt/:id",produces = "application/json")
 
- /*   @PatchMapping(value = "/api/user/receipt/:id",produces = "application/json")
-    private String changeReceiptPOST(@Valid ReceiptHost newReceipt, BindingResult result, Model model, HttpSession session){
+    @PatchMapping(value = "/api/user/receipt/:id",produces = "application/json")
+    private String changeReceiptPOST(@PathVariable("id") long id, @Valid ReceiptHost newReceipt){
+        SecurityContext context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+        User user = userService.findByUsername(username);
         Receipt oldReceipt = (Receipt) session.getAttribute("changedReceipt");
-        Receipt changedReceipt = receiptService.change(oldReceipt, newReceipt);
-        return changedReceipt;
+        receiptService.change(oldReceipt, newReceipt);
+        return "Receipt have been changed";
     }
 
     @DeleteMapping(value = "/api/user/receipt/:id", produces = "application/json")
     public String deleteReceipt(@PathVariable("id") long id) {
+        SecurityContext context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+        User user = userService.findByUsername(username);
         Receipt receipt = receiptService.findById(id).orElseThrow(()-> new IllegalArgumentException("Invalid Receipt ID"));
-        receiptService.delete(receipt);
-        return "Receipt has been deleted";
+        if(user.id = receipt.user_id) {
+            receiptService.delete(receipt);
+            return "Receipt has been deleted";
+        }
+        return "You are not the right user!";
     }
-*/
-/*
-    @GetMapping(value = "/api/user/types",produces = "application/json")
 
-    @PostMapping(value = "/api/user/types",produces = "application/json")
+    // @GetMapping(value = "/api/user/types",produces = "application/json")
 
-    @PatchMapping(value = "/api/user/types/:id",produces = "application/json")
+    // @PostMapping(value = "/api/user/types",produces = "application/json")
 
-    @DeleteMapping(value = "/api/user/types/:id",produces = "application/json")
+    // @PatchMapping(value = "/api/user/types/:id",produces = "application/json")
 
-    @DeleteMapping(value = "/api/user/overview",produces = "application/json")
+    // @DeleteMapping(value = "/api/user/types/:id",produces = "application/json")
 
-    @DeleteMapping(value = "/api/user/comparison",produces = "application/json")*/
+    // @DeleteMapping(value = "/api/user/overview",produces = "application/json")
+
+    // @DeleteMapping(value = "/api/user/comparison",produces = "application/json")
 
 }
