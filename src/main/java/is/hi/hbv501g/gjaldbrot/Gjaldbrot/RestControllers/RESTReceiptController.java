@@ -18,28 +18,42 @@ public class RESTReceiptController {
     @Autowired
     private UserService userService;
 
-    @GetMapping(value = "/api/user/getReceipts",produces = "application/json")
-    public User getUserDetail(){
-        SecurityContext context = SecurityContextHolder.getContext();
-        String username = context.getAuthentication().getName();
-        User user = userService.findByUsername(username);
-        return user;
+    private ReceiptService receiptService;
+
+    @GetMapping(value = "/api/user/receipt",produces = "application/json")
+    public String receiptsGet(HttpSession session) {
+        User user = userService.findByUsername(sessionUser.getUsername());
+        List<Receipt> receipts = receiptService.getReceiptByUser(user);
+        return receipts;
     }
 
-    @PostMapping(value = "/api/user/newReceipt", produces = "application/json")
-    public Receipt addReceipt(@RequestBody ReceiptHost newReceipt) {
-        SecurityContext context = SecurityContextHolder.getContext();
-        String username = context.getAuthentication().getName();
-        User user = userService.findByUsername(username);
-        try {
-            Receipt receipt = newReceipt.createReceipt();
-            user.addReceipt(receipt);
-            userService.save(user);
-            return receipt;
-        }
-        catch (Exception e) {
-            return null;
-        }
+    //@GetMapping(value = "/api/user/receipt/:id",produces = "application/json")
+
+    @PatchMapping(value = "/api/user/receipt/:id",produces = "application/json")
+    private String changeReceiptPOST(@Valid ReceiptHost newReceipt, BindingResult result, Model model, HttpSession session){
+        Receipt oldReceipt = (Receipt) session.getAttribute("changedReceipt");
+        Receipt changedReceipt = receiptService.change(oldReceipt, newReceipt);
+        return changedReceipt;
     }
+
+    @DeleteMapping(value = "/api/user/receipt/:id", produces = "application/json")
+    public String deleteReceipt(@PathVariable("id") long id) {
+        Receipt receipt = receiptService.findById(id).orElseThrow(()-> new IllegalArgumentException("Invalid Receipt ID"));
+        receiptService.delete(receipt);
+        return "Receipt has been deleted";
+    }
+
+
+    @GetMapping(value = "/api/user/types",produces = "application/json")
+
+    @PostMapping(value = "/api/user/types",produces = "application/json")
+
+    @PatchMapping(value = "/api/user/types/:id",produces = "application/json")
+
+    @DeleteMapping(value = "/api/user/types/:id",produces = "application/json")
+
+    @DeleteMapping(value = "/api/user/overview",produces = "application/json")
+
+    @DeleteMapping(value = "/api/user/comparison",produces = "application/json")
 
 }
