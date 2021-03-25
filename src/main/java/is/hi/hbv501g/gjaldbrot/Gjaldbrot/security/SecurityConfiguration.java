@@ -26,7 +26,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 
     private static final RequestMatcher PROTECTED_URLS = new OrRequestMatcher(
-            new AntPathRequestMatcher("/api/**")
+            new AntPathRequestMatcher("/api/user/**")
     );
 
     is.hi.hbv501g.gjaldbrot.Gjaldbrot.security.AuthenticationProvider provider;
@@ -43,7 +43,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(final WebSecurity webSecurity) {
-        webSecurity.ignoring().antMatchers("/token/**");
+        webSecurity.ignoring().antMatchers("/api/login", "/api/signup");
     }
 
     @Override

@@ -1,5 +1,6 @@
 package is.hi.hbv501g.gjaldbrot.Gjaldbrot.RestControllers;
 
+import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.User;
 import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Services.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,25 @@ public class TokenController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/token")
-    public String getToken(@RequestParam("username") final String username, @RequestParam("password") final String password, HttpServletResponse response){
+    @PostMapping("/api/signup")
+    public String createUser(@RequestParam("username") final String username,
+                             @RequestParam("password") final String password) {
+        User newUser = new User(username, password);
+        System.out.println(newUser);
+        try {
+            userService.signupUser(newUser);
+            return "user created";
+        }
+        catch (Exception e) {
+            System.out.println(e);
+            return "could not create user, username already exists";
+        }
+    }
+
+    @PostMapping("/api/login")
+    public String getToken(@RequestParam("username") final String username,
+                           @RequestParam("password") final String password,
+                           HttpServletResponse response){
         String token= userService.login(username,password);
 
         if(StringUtils.isEmpty(token)){

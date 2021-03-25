@@ -1,6 +1,8 @@
 package is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities;
 
 
+import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReceiptType> receiptTypes;
 
+    @Column(unique = true)
     private String username;
 
     private String password;
@@ -28,12 +31,15 @@ public class User {
 
 
     public User() {
-        receiptTypes = new ArrayList<ReceiptType>();
+        this.receipts = new ArrayList<Receipt>();
+        this.receiptTypes = new ArrayList<ReceiptType>();
     }
 
     public User(String username, String password) {
         this.username = username;
         this.password = password;
+        this.receipts = new ArrayList<Receipt>();
+        this.receiptTypes = new ArrayList<ReceiptType>();
     }
 
     /**
