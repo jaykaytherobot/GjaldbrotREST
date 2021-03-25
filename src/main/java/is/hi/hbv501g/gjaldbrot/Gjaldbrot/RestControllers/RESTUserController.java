@@ -18,7 +18,7 @@ public class RESTUserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping(value = "/api/user/",produces = "application/json")
+    @GetMapping(value = "/api/user",produces = "application/json")
     public User getUserDetail() {
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
