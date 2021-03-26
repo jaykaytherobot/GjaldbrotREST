@@ -89,36 +89,24 @@ public class RESTReceiptController {
 
     @GetMapping(value = "/api/user/overview",produces = "application/json")
     public String overview(){
-        DateFormat df = new SimpleDateFormat("yyyy-MM");
-        Date dateobj = new Date();
-
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
         User user = userService.findByUsername(username);
 
         if (user != null) {
-            List<Receipt> receipts = receiptService.getReceiptsByMonth(user, df.format(dateobj));
-            JSONWriter.writeReceipts(user, receipts);
-
-            return  JSONWriter.writeReceipts(user, receipts);
+            return JSONWriter.writeReceipts(user, user.getReceipts());
         }
         return "User does not own a receipt with this id";
     }
 
     @GetMapping(value = "/api/user/comparison",produces = "application/json")
     public String comparison() {
-        DateFormat df = new SimpleDateFormat("yyyy-MM");
-        Date dateobj = new Date();
-
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
         User user = userService.findByUsername(username);
 
         if (user != null) {
-            List<Receipt> receipts = receiptService.getReceiptByUser(user);
-            JSONWriter.writeComparisonData(user, receipts);
-
-            return JSONWriter.writeComparisonData(user, receipts);
+            return JSONWriter.writeComparisonData(user, user.getReceipts());
         }
         return "User does not own a receipt with this id";
     }
