@@ -115,6 +115,6 @@ public class Receipt implements Comparable<Receipt>{
 
     @Override
     public String toString(){
-        return "" + id.toString() + "\n" + date + "\n" + time + "\n" + type + "\n" + amount;
+        return "" + id + "\n" + date + "\n" + time + "\n" + type + "\n" + amount;
     }
 }

@@ -85,6 +85,15 @@ public class User {
         this.token = token;
     }
 
+    public Receipt getReceipt(Long id) {
+        for (Receipt r: this.receipts) {
+            if (r.getId() == id) {
+                return r;
+            }
+        }
+        return null;
+    }
+
     public void addReceipt(Receipt receipt) {
         receipts.add(receipt);
         receipt.setUser(this);
@@ -93,6 +102,15 @@ public class User {
     public void deleteReceipt(Receipt receipt) {
         receipts.remove(receipt);
         receipt.setUser(null);
+    }
+
+    public ReceiptType getReceiptType(Long id) {
+        for (ReceiptType rt: this.receiptTypes) {
+            if (rt.getId().equals(id)) {
+                return rt;
+            }
+        }
+        return null;
     }
 
     public void addReceiptType(ReceiptType receiptType) {

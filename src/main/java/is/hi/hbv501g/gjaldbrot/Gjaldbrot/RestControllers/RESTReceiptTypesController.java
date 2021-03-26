@@ -36,4 +36,19 @@ public class RESTReceiptTypesController {
         userService.save(user);
         return receiptType;
     }
+
+    @PatchMapping(value = "api/user/types/{id}", produces = "application/json")
+    public ReceiptType patchReceiptType(@PathVariable Long id, @RequestBody ReceiptType receiptType) {
+        SecurityContext context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+        User user = userService.findByUsername(username);
+
+        ReceiptType oldReceiptType = user.getReceiptType(id);
+        if (oldReceiptType != null) {
+            oldReceiptType.setName(receiptType.getName());
+            userService.save(user);
+            return oldReceiptType;
+        }
+        return null;
+    }
 }

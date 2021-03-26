@@ -24,11 +24,27 @@ public class RESTReceiptController {
     private ReceiptService receiptService;
 
     @GetMapping(value = "/api/user/receipt",produces = "application/json")
-    public String receiptsGet(HttpSession session) {
+    public List<Receipt> receiptsGet(HttpSession session) {
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
         User user = userService.findByUsername(username);
-        return user.getReceipts().toString();
+        return user.getReceipts();
+    }
+
+    @PostMapping(value = "/api/user/receipt", produces = "application/json")
+    public String receiptPost(@RequestBody ReceiptHost receiptHost) {
+        SecurityContext context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+        User user = userService.findByUsername(username);
+        try {
+            Receipt receipt = receiptHost.createReceipt();
+            user.addReceipt(receipt);
+            userService.save(user);
+            return "Receipt is created";
+        }
+        catch (Exception e) {
+            return "Could not create receipt";
+        }
     }
 
     // @GetMapping(value = "/api/user/receipt/:id",produces = "application/json")
@@ -38,12 +54,16 @@ public class RESTReceiptController {
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
         User user = userService.findByUsername(username);
-        Receipt oldReceipt = (Receipt) session.getAttribute("changedReceipt");
-        receiptService.change(oldReceipt, newReceipt);
-        return "Receipt have been changed";
+        Receipt receipt = user.getReceipt(id);
+        if(receipt != null) {
+            System.out.println(receipt);
+            System.out.println(newReceipt);
+            return newReceipt.toString();
+        }
+        return "User does not own a receipt with this id";
     }
 
-    @DeleteMapping(value = "/api/user/receipt/:id", produces = "application/json")
+    /*@DeleteMapping(value = "/api/user/receipt/:id", produces = "application/json")
     public String deleteReceipt(@PathVariable("id") long id) {
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
@@ -54,7 +74,7 @@ public class RESTReceiptController {
             return "Receipt has been deleted";
         }
         return "You are not the right user!";
-    }
+    }*/
 
     // @GetMapping(value = "/api/user/types",produces = "application/json")
 
