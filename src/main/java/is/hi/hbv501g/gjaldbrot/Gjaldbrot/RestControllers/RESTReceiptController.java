@@ -47,7 +47,17 @@ public class RESTReceiptController {
         }
     }
 
-    // @GetMapping(value = "/api/user/receipt/:id",produces = "application/json")
+    @GetMapping(value = "/api/user/receipt/:id",produces = "application/json")
+    private String getReceiptGet(@PathVariable("id") long id){
+        SecurityContext context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+        User user = userService.findByUsername(username);
+        Receipt receipt = user.getReceipt(id);
+        if(receipt != null) {
+            return receipt.toString();
+        }
+        return "User does not own a receipt with this id";
+    }
 
     @PatchMapping(value = "/api/user/receipt/:id",produces = "application/json")
     private String changeReceiptPOST(@PathVariable("id") long id, @Valid ReceiptHost newReceipt){
@@ -56,33 +66,23 @@ public class RESTReceiptController {
         User user = userService.findByUsername(username);
         Receipt receipt = user.getReceipt(id);
         if(receipt != null) {
-            System.out.println(receipt);
-            System.out.println(newReceipt);
             return newReceipt.toString();
         }
         return "User does not own a receipt with this id";
     }
 
-    /*@DeleteMapping(value = "/api/user/receipt/:id", produces = "application/json")
+    @DeleteMapping(value = "/api/user/receipt/:id", produces = "application/json")
     public String deleteReceipt(@PathVariable("id") long id) {
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
         User user = userService.findByUsername(username);
-        Receipt receipt = receiptService.findById(id).orElseThrow(()-> new IllegalArgumentException("Invalid Receipt ID"));
-        if(user.id = receipt.user_id) {
+        Receipt receipt = user.getReceipt(id);
+        if(receipt != null) {
             receiptService.delete(receipt);
             return "Receipt has been deleted";
         }
-        return "You are not the right user!";
-    }*/
-
-    // @GetMapping(value = "/api/user/types",produces = "application/json")
-
-    // @PostMapping(value = "/api/user/types",produces = "application/json")
-
-    // @PatchMapping(value = "/api/user/types/:id",produces = "application/json")
-
-    // @DeleteMapping(value = "/api/user/types/:id",produces = "application/json")
+        return "User does not own a receipt with this id";
+    }
 
     // @DeleteMapping(value = "/api/user/overview",produces = "application/json")
 
