@@ -84,8 +84,39 @@ public class RESTReceiptController {
         return "User does not own a receipt with this id";
     }
 
-    // @DeleteMapping(value = "/api/user/overview",produces = "application/json")
+    @GetMapping(value = "/api/user/overview",produces = "application/json")
+    public String overview(){
+        DateFormat df = new SimpleDateFormat("yyyy-MM");
+        Date dateobj = new Date();
 
-    // @DeleteMapping(value = "/api/user/comparison",produces = "application/json")
+        SecurityContext context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+        User user = userService.findByUsername(username);
 
+        if (User != null) {
+            List<Receipt> receipts = receiptService.getReceiptsByMonth(user, df.format(dateobj));
+            JSONWriter.writeReceipts(user, receipts);
+
+            return  JSONWriter.writeReceipts(user, receipts);;
+        }
+        return "User does not own a receipt with this id";
+    }
+
+    @GetMapping(value = "/api/user/comparison",produces = "application/json")
+    public String comparison() {
+        DateFormat df = new SimpleDateFormat("yyyy-MM");
+        Date dateobj = new Date();
+
+        SecurityContext context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+        User user = userService.findByUsername(username);
+
+        if (user != null) {
+            List<Receipt> receipts = receiptService.getReceiptByUser(user);
+            JSONWriter.writeComparisonData(user, receipts);
+
+            return JSONWriter.writeComparisonData(user, receipts);
+        }
+        return "User does not own a receipt with this id";
+    }
 }
