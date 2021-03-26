@@ -49,32 +49,34 @@ public class RESTReceiptController {
 
     // @GetMapping(value = "/api/user/receipt/:id",produces = "application/json")
 
-    @PatchMapping(value = "/api/user/receipt/:id",produces = "application/json")
-    private String changeReceiptPOST(@PathVariable("id") long id, @Valid ReceiptHost newReceipt){
+    @PatchMapping(value = "/api/user/receipt/{id}",produces = "application/json")
+    private String changeReceiptPOST(@PathVariable("id") long id, @RequestBody ReceiptHost newReceipt){
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
         User user = userService.findByUsername(username);
         Receipt receipt = user.getReceipt(id);
         if(receipt != null) {
-            System.out.println(receipt);
-            System.out.println(newReceipt);
+            receipt.modify(newReceipt);
+            userService.save(user);
             return newReceipt.toString();
         }
         return "User does not own a receipt with this id";
     }
 
-    /*@DeleteMapping(value = "/api/user/receipt/:id", produces = "application/json")
+    @DeleteMapping(value = "/api/user/receipt/{id}", produces = "application/json")
     public String deleteReceipt(@PathVariable("id") long id) {
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
         User user = userService.findByUsername(username);
-        Receipt receipt = receiptService.findById(id).orElseThrow(()-> new IllegalArgumentException("Invalid Receipt ID"));
-        if(user.id = receipt.user_id) {
-            receiptService.delete(receipt);
-            return "Receipt has been deleted";
+
+        Receipt receipt = user.getReceipt(id);
+        if (receipt != null) {
+            user.deleteReceipt(receipt);
+            userService.save(user);
+            return "Receipt deleted";
         }
-        return "You are not the right user!";
-    }*/
+        return "User does not own a receipt with this id";
+    }
 
     // @GetMapping(value = "/api/user/types",produces = "application/json")
 

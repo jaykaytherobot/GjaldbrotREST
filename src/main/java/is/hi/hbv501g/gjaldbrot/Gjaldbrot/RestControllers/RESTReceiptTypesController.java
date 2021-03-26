@@ -51,4 +51,20 @@ public class RESTReceiptTypesController {
         }
         return null;
     }
+
+    @DeleteMapping(value = "/api/user/types/{id}", produces = "application/json")
+    public String deleteReceiptType(@PathVariable Long id) {
+        SecurityContext context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+        User user = userService.findByUsername(username);
+
+        ReceiptType receiptType = user.getReceiptType(id);
+        if (receiptType != null) {
+            user.deleteReceiptsOfType(id);
+            user.deleteReceiptType(receiptType);
+            userService.save(user);
+            return "Receipt type deleted";
+        }
+        return "No receipt type to delete with this id";
+    }
 }

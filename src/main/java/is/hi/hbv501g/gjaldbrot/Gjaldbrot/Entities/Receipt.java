@@ -1,6 +1,7 @@
 package is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.data.annotation.Reference;
 
 import javax.persistence.*;
 import java.time.LocalTime;
@@ -94,6 +95,29 @@ public class Receipt implements Comparable<Receipt>{
 
     public void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    public void modify(ReceiptHost rh) {
+        if (rh.getAmount() > 0) {
+            this.amount = rh.getAmount();
+        }
+        if (rh.getDate() != null) {
+            try {
+                this.date = rh.getParsedDate();
+            }
+            catch (Exception e) {
+            }
+        }
+        if (rh.getType() != null) {
+            try {
+                this.type = Integer.parseInt(rh.getType());
+            }
+            catch (Exception e) {
+            }
+        }
+        if (rh.getTime() != null) {
+            this.time = rh.getParsedTime();
+        }
     }
 
     @Override

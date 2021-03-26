@@ -5,6 +5,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -102,6 +103,18 @@ public class User {
     public void deleteReceipt(Receipt receipt) {
         receipts.remove(receipt);
         receipt.setUser(null);
+    }
+
+    public void deleteReceiptsOfType(Long type) {
+        ArrayList<Receipt> receiptsToDelete = new ArrayList<Receipt>();
+        for (Receipt r: this.receipts) {
+            if (Long.compare(r.getType(), type) == 0) {
+                receiptsToDelete.add(r);
+            }
+        }
+        for (Receipt r : receiptsToDelete) {
+            deleteReceipt(r);
+        }
     }
 
     public ReceiptType getReceiptType(Long id) {

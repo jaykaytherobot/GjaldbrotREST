@@ -17,8 +17,10 @@ public class ReceiptHost {
     private String type;
     private int amount;
 
-    public ReceiptHost(){
+    public ReceiptHost(){}
 
+    public ReceiptHost(int amount) {
+        this.amount = amount;
     }
 
     public void setDate(String date) {
@@ -41,8 +43,17 @@ public class ReceiptHost {
         return date;
     }
 
+    public Date getParsedDate() throws Exception{
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        return df.parse(this.date);
+    }
+
     public String getTime() {
         return time;
+    }
+
+    public LocalTime getParsedTime() {
+        return LocalTime.parse(this.time);
     }
 
     public String getType() {
