@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -93,11 +96,11 @@ public class RESTReceiptController {
         String username = context.getAuthentication().getName();
         User user = userService.findByUsername(username);
 
-        if (User != null) {
+        if (user != null) {
             List<Receipt> receipts = receiptService.getReceiptsByMonth(user, df.format(dateobj));
             JSONWriter.writeReceipts(user, receipts);
 
-            return  JSONWriter.writeReceipts(user, receipts);;
+            return  JSONWriter.writeReceipts(user, receipts);
         }
         return "User does not own a receipt with this id";
     }
