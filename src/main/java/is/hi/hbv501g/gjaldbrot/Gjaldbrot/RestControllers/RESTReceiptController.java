@@ -7,6 +7,7 @@ import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.User;
 import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Services.ReceiptService;
 import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
@@ -26,7 +27,13 @@ public class RESTReceiptController {
 
     private ReceiptService receiptService;
 
-    @GetMapping(value = "/api/user/receipt",produces = "application/json")
+    @ExceptionHandler({ Exception.class })
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String onError(Exception e) {
+        return e.getMessage();
+    }
+
+    @GetMapping(value = "/api/user/receipt", produces = "application/json")
     public List<Receipt> receiptsGet(HttpSession session) {
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
@@ -35,7 +42,8 @@ public class RESTReceiptController {
     }
 
     @PostMapping(value = "/api/user/receipt", produces = "application/json")
-    public String receiptPost(@RequestBody ReceiptHost receiptHost) {
+    public String receiptPost(@RequestBody ReceiptHost receiptHost)
+        throws Exception{
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
         User user = userService.findByUsername(username);
@@ -46,12 +54,13 @@ public class RESTReceiptController {
             return "Receipt is created";
         }
         catch (Exception e) {
-            return "Could not create receipt";
+            throw new Exception("Could not create receipt");
         }
     }
 
     @GetMapping(value = "/api/user/receipt/:id",produces = "application/json")
-    private String getReceiptGet(@PathVariable("id") long id){
+    private String getReceiptGet(@PathVariable("id") long id)
+        throws Exception{
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
         User user = userService.findByUsername(username);
@@ -59,11 +68,14 @@ public class RESTReceiptController {
         if(receipt != null) {
             return receipt.toString();
         }
-        return "User does not own a receipt with this id";
+        else {
+            throw new Exception("User does not own a receipt with this id");
+        }
     }
 
     @PatchMapping(value = "/api/user/receipt/{id}",produces = "application/json")
-    private String changeReceiptPOST(@PathVariable("id") long id, @RequestBody ReceiptHost newReceipt){
+    private String changeReceiptPOST(@PathVariable("id") long id, @RequestBody ReceiptHost newReceipt)
+        throws Exception{
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
         User user = userService.findByUsername(username);
@@ -73,11 +85,14 @@ public class RESTReceiptController {
             userService.save(user);
             return newReceipt.toString();
         }
-        return "User does not own a receipt with this id";
+        else {
+            throw new Exception("User does not own a receipt with this id");
+        }
     }
 
     @DeleteMapping(value = "/api/user/receipt/:id", produces = "application/json")
-    public String deleteReceipt(@PathVariable("id") long id) {
+    public String deleteReceipt(@PathVariable("id") long id)
+        throws Exception{
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
         User user = userService.findByUsername(username);
@@ -88,10 +103,12 @@ public class RESTReceiptController {
             userService.save(user);
             return "Receipt deleted";
         }
-        return "User does not own a receipt with this id";
+        else {
+            throw new Exception("User does not own a receipt with this id");
+        }
     }
 
-    @GetMapping(value = "/api/user/overview",produces = "application/json")
+    @GetMapping(value = "/api/user/overview", produces = "application/json")
     public String overview(){
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
@@ -103,7 +120,7 @@ public class RESTReceiptController {
         return "User does not own a receipt with this id";
     }
 
-    @GetMapping(value = "/api/user/comparison",produces = "application/json")
+    @GetMapping(value = "/api/user/comparison", produces = "application/json")
     public String comparison() {
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();

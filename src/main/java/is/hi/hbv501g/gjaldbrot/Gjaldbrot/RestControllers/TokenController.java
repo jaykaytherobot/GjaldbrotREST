@@ -4,9 +4,8 @@ import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.User;
 import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Services.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,9 +15,15 @@ public class TokenController {
     @Autowired
     private UserService userService;
 
+    @ExceptionHandler({ Exception.class })
+    @ResponseStatus(code=HttpStatus.BAD_REQUEST)
+    public String handleException(Exception e) {
+        return e.getMessage();
+    }
+
     @PostMapping("/api/signup")
     public String createUser(@RequestParam("username") final String username,
-                             @RequestParam("password") final String password) {
+                             @RequestParam("password") final String password) throws Exception {
         User newUser = new User(username, password);
         System.out.println(newUser);
         try {
@@ -27,18 +32,18 @@ public class TokenController {
         }
         catch (Exception e) {
             System.out.println(e);
-            return "could not create user, username already exists";
+            throw new Exception("Username already exists");
         }
     }
 
     @PostMapping("/api/login")
     public String getToken(@RequestParam("username") final String username,
                            @RequestParam("password") final String password,
-                           HttpServletResponse response){
+                           HttpServletResponse response) throws Exception{
         String token= userService.login(username,password);
 
         if(StringUtils.isEmpty(token)){
-            return "no token found";
+            throw new Exception("Could not login, check username and password");
         }
         return "{"+
                 "\"token_type\":\"Bearer\","+
