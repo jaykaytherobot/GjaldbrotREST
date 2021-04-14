@@ -4,7 +4,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Klasi notaður til þess að geyma gögn úr ThymeLeaf á strengjaformi,
@@ -12,9 +14,31 @@ import java.util.Date;
  */
 
 public class ReceiptHost {
+
+    public static List<ReceiptHost> receiptListToHostList(List<Receipt> rl, List<ReceiptType> tl) {
+        System.out.println("Transforming receipt list");
+        List<ReceiptHost> hostList = new ArrayList<>();
+        for (Receipt r : rl) {
+            System.out.println("Transforming receipt");
+            ReceiptHost receiptHost = new ReceiptHost();
+            receiptHost.setAmount(r.getAmount());
+            receiptHost.setDate(r.getDate().toString());
+            receiptHost.setTime(r.getTime().toString());
+            receiptHost.setTypeId(r.getType()+"");
+            for (ReceiptType rt : tl) {
+                if (rt.getId().intValue() == r.getType()) {
+                    receiptHost.setType(rt.getName());
+                    hostList.add(receiptHost);
+                }
+            }
+        }
+        return hostList;
+    }
+
     private String date;
     private String time;
     private String type;
+    private String type_id;
     private int amount;
 
     public ReceiptHost(){}
@@ -34,6 +58,10 @@ public class ReceiptHost {
     public void setType(String type) {
         this.type = type;
     }
+
+    public void setTypeId(String type_id) { this.type_id = type_id; }
+
+    public String getType_id() { return this.type_id; }
 
     public void setAmount(int amount) {
         this.amount = amount;
@@ -89,7 +117,7 @@ public class ReceiptHost {
         LocalTime t = LocalTime.parse(this.time);
         r.setTime(t);
         r.setAmount(this.amount);
-        r.setType(Integer.parseInt(type));
+        r.setType(Integer.parseInt(type_id));
         return r;
     }
 }

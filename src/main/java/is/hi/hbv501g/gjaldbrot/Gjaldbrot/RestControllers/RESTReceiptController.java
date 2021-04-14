@@ -1,9 +1,6 @@
 package is.hi.hbv501g.gjaldbrot.Gjaldbrot.RestControllers;
 
-import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.JSONWriter;
-import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.Receipt;
-import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.ReceiptHost;
-import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.User;
+import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities.*;
 import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Services.ReceiptService;
 import is.hi.hbv501g.gjaldbrot.Gjaldbrot.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +31,13 @@ public class RESTReceiptController {
     }
 
     @GetMapping(value = "/api/user/receipt", produces = "application/json")
-    public List<Receipt> receiptsGet(HttpSession session) {
+    public List<ReceiptHost> receiptsGet(HttpSession session) {
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
         User user = userService.findByUsername(username);
-        return user.getReceipts();
+        List<Receipt> receiptList = user.getReceipts();
+        List<ReceiptType> receiptTypeList = user.getReceiptTypes();
+        return ReceiptHost.receiptListToHostList(receiptList, receiptTypeList);
     }
 
     @PostMapping(value = "/api/user/receipt", produces = "application/json")
