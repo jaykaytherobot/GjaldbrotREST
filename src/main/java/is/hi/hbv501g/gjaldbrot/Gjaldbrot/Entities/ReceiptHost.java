@@ -21,6 +21,7 @@ public class ReceiptHost {
         for (Receipt r : rl) {
             System.out.println("Transforming receipt");
             ReceiptHost receiptHost = new ReceiptHost();
+            receiptHost.setId(r.getId());
             receiptHost.setAmount(r.getAmount());
             receiptHost.setDate(r.getDate().toString());
             receiptHost.setTime(r.getTime().toString());
@@ -35,6 +36,7 @@ public class ReceiptHost {
         return hostList;
     }
 
+    private long id;
     private String date;
     private String time;
     private String type;
@@ -46,6 +48,9 @@ public class ReceiptHost {
     public ReceiptHost(int amount) {
         this.amount = amount;
     }
+
+    public void setId(long id) {this.id = id;}
+    public long getId() { return id; }
 
     public void setDate(String date) {
         this.date = date;
