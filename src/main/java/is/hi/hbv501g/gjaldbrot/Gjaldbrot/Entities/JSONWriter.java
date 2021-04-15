@@ -37,7 +37,10 @@ public class JSONWriter {
         for(int i = 0; i < receiptTypes.size(); i++) {
             String receiptTypeName = receiptTypes.get(i).getName();
             int amount = amounts[i];
-            json += "{\"name\":\"" + receiptTypeName + "\",\"amount\":" + amount+"},";
+            json += "{\"name\":\"" + receiptTypeName + "\",\"amount\":" + amount+"}";
+            if (i < receiptTypes.size() - 1) {
+                json += ",";
+            }
         }
         return json + "]}";
     }
