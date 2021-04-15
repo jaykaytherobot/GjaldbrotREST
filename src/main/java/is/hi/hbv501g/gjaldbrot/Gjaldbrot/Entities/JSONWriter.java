@@ -32,14 +32,14 @@ public class JSONWriter {
             }
         }
 
-        String json = "{";
+        String json = "{\"group\":[";
 
         for(int i = 0; i < receiptTypes.size(); i++) {
             String receiptTypeName = receiptTypes.get(i).getName();
             int amount = amounts[i];
-            json += '\"' + receiptTypeName + "\":" + amount+',';
+            json += "{\"name\":\"" + receiptTypeName + "\",\"amount\":" + amount+"},";
         }
-        return json + '}';
+        return json + "]}";
     }
 
     public static String writeComparisonData(User user, List<Receipt> r) {
