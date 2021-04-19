@@ -36,6 +36,12 @@ public class ReceiptType {
         this.name = name;
     }
 
+    public ReceiptType(User user, String name, int color){
+        this.user = user;
+        this.name = name;
+        this.color = color;
+    }
+
     public Long getId() {
         return id;
     }
