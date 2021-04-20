@@ -3,10 +3,7 @@ package is.hi.hbv501g.gjaldbrot.Gjaldbrot.Entities;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class JSONWriter {
     private static int getIndexOfType(List<ReceiptType> lr, int type) {
@@ -21,11 +18,19 @@ public class JSONWriter {
     }
 
     public static String writeReceipts(User user, List<Receipt> receipts) {
-        // TODO líklega þarf að sækja líka receiptTypes úr repository til að fá það sem notandi býr til sjálfur
+        Calendar currentDate = Calendar.getInstance();
+        currentDate.setTime(new Date());
+        Calendar receiptDate = Calendar.getInstance();
+
         List<ReceiptType> receiptTypes = user.getReceiptTypes();
         int[] amounts = new int[receiptTypes.size()];
         System.out.println(user.getReceipts().size());
         for(Receipt r : receipts) {
+            receiptDate.setTime(r.getDate());
+            if (receiptDate.get(Calendar.YEAR) != currentDate.get(Calendar.YEAR)
+            || receiptDate.get(Calendar.MONTH) != currentDate.get(Calendar.MONTH)) {
+                continue;
+            }
             int typeIndex = getIndexOfType(receiptTypes, r.getType());
             if (typeIndex >= 0) {
                 amounts[typeIndex] += r.getAmount();
@@ -49,6 +54,9 @@ public class JSONWriter {
     public static String writeComparisonData(User user, List<Receipt> r) {
         Collections.sort(r);
 
+        if (r.isEmpty()) {
+            return "";
+        }
         Calendar start = Calendar.getInstance();
         start.setTime(r.get(0).getDate());
         Calendar end = Calendar.getInstance();
@@ -62,17 +70,17 @@ public class JSONWriter {
         Calendar temp = Calendar.getInstance();
         Calendar cur = (Calendar) start.clone();
 
-        int monthIndex = 0;
-
         List<ReceiptType> receiptTypes = user.getReceiptTypes();
 
         int[][] comp = new int[receiptTypes.size()][diff];
+        String[] months = new String[diff];
 
-
+        int monthIndex = 0;
         for (Receipt _r : r) {
             temp.setTime(_r.getDate()); // get the date of the receipt
 
-            while(temp.get(Calendar.MONTH) > cur.get(Calendar.MONTH)) {
+            while(temp.get(Calendar.MONTH) > cur.get(Calendar.MONTH) || temp.get(Calendar.YEAR) > cur.get(Calendar.YEAR)) {
+                months[monthIndex] = cur.get(Calendar.YEAR)+"-"+cur.get(Calendar.MONTH);
                 cur.add(Calendar.MONTH, 1);
                 monthIndex += 1;
             }
@@ -86,30 +94,27 @@ public class JSONWriter {
             if (typeIndex < 0) { continue; }
 
             comp[typeIndex][monthIndex] += _r.getAmount();
-            /*if (_r.getType() == Type.MATARINNKAUP) matur[monthIndex] += _r.getAmount();
-            else if (_r.getType() == Type.FATNADUR) fatnadur[monthIndex] += _r.getAmount();
-            else if (_r.getType() == Type.AFENGI) afengi[monthIndex] += _r.getAmount();
-            else if (_r.getType() == Type.TOBAK) tobak[monthIndex] += _r.getAmount();
-            else if (_r.getType() == Type.SKEMMTUN_OG_AFTREYING) skemmtun[monthIndex] += _r.getAmount();
-            else if (_r.getType() == Type.VEITINGASTADUR) veitingar[monthIndex] += _r.getAmount();*/
         }
+        months[diff-1] = end.get(Calendar.YEAR)+"-"+end.get(Calendar.MONTH);
 
         DateFormat df = new SimpleDateFormat("yyyy-MM");
 
 
-        String json = "{\"start\":\""+df.format(start.getTime())+"\",";
-        json += "\"end\":\""+df.format(end.getTime())+"\",";
+        String json = "{\"startDate\":\""+df.format(start.getTime())+"\",";
+        json += "\"endDate\":\""+df.format(end.getTime())+"\",";
+        json += "\"groups\":[";
 
         for(int i = 0; i < receiptTypes.size(); i++) {
             String typeName = receiptTypes.get(i).getName();
-            json += '\"'+typeName+"\":[";
+            int typeColor = receiptTypes.get(i).getColor();
+            json += "{\"name\":\""+typeName+"\",\"color\":"+typeColor+",\"amounts\":[";
             for(int month = 0; month < diff - 1; month++) {
-                json += comp[i][month]+",";
+                json += "{\"date\":\""+months[month]+"\",\"amount\":"+comp[i][month]+"},";
             }
-            json += comp[i][diff-1] +"],";
+            json += "{\"date\":\""+months[diff-1]+"\",\"amount\":"+comp[i][diff-1] +"}]}";
+            if (i < receiptTypes.size() - 1) json += ",";
         }
-        json += '}';
-        System.out.println(json);
+        json += "]}";
         return json;
     }
 

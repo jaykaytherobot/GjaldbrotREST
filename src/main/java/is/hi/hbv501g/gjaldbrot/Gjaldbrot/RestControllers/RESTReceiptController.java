@@ -73,7 +73,7 @@ public class RESTReceiptController {
     }
 
     @PatchMapping(value = "/api/user/receipt/{id}",produces = "application/json")
-    private String changeReceiptPOST(@PathVariable("id") long id, @RequestBody ReceiptHost newReceipt)
+    public String changeReceiptPOST(@PathVariable("id") long id, @RequestBody ReceiptHost newReceipt)
         throws Exception{
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
