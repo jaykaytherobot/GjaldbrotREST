@@ -36,10 +36,9 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public User signupUser(User user){
-        ReceiptType[] defaultReceiptTypes = new ReceiptType[3];
-        defaultReceiptTypes[0] = new ReceiptType(user, "Matur", -256);
-        defaultReceiptTypes[1] = new ReceiptType(user, "Leiga", -16711936);
-        defaultReceiptTypes[2] = new ReceiptType(user, "Annað", -16776961);
+        ReceiptType[] defaultReceiptTypes = new ReceiptType[2];
+        defaultReceiptTypes[0] = new ReceiptType(user, "Matur", -256, 10000);
+        defaultReceiptTypes[1] = new ReceiptType(user, "Leiga", -16711936, 15000);
         List<ReceiptType> receiptTypes = user.getReceiptTypes();
         for (ReceiptType defaultReceiptType: defaultReceiptTypes) {
             user.addReceiptType(defaultReceiptType);

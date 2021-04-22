@@ -45,10 +45,11 @@ public class ReceiptType {
         this.name = name;
     }
 
-    public ReceiptType(User user, String name, int color){
+    public ReceiptType(User user, String name, int color, int maxBudget){
         this.user = user;
         this.name = name;
         this.color = color;
+        this.maxBudget = maxBudget;
     }
 
     public Long getId() {
