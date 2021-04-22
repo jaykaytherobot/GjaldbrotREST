@@ -89,7 +89,7 @@ public class RESTReceiptController {
         }
     }
 
-    @DeleteMapping(value = "/api/user/receipt/:id", produces = "application/json")
+    @DeleteMapping(value = "/api/user/receipt/{id}", produces = "application/json")
     public String deleteReceipt(@PathVariable("id") long id)
         throws Exception{
         SecurityContext context = SecurityContextHolder.getContext();
