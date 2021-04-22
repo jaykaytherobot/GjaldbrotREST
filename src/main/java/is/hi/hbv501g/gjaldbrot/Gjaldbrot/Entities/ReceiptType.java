@@ -18,6 +18,15 @@ public class ReceiptType {
 
     private String name;
     private int color;
+    private int maxBudget;
+
+    public int getMaxBudget() {
+        return maxBudget;
+    }
+
+    public void setMaxBudget(int maxBudget) {
+        this.maxBudget = maxBudget;
+    }
 
     public int getColor() {
         return color;
