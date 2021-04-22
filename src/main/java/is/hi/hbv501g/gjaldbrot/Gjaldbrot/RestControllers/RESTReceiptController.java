@@ -103,6 +103,7 @@ public class RESTReceiptController {
             return "Receipt deleted";
         }
         else {
+            System.out.println("USER DOES NOT OWN A RECEIPT WITH THIS ID");
             throw new Exception("User does not own a receipt with this id");
         }
     }
