@@ -88,7 +88,7 @@ public class User {
 
     public Receipt getReceipt(Long id) {
         for (Receipt r: this.receipts) {
-            if (r.getId() == id) {
+            if (r.getId().equals(id)) {
                 return r;
             }
         }
