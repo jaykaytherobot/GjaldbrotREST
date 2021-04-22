@@ -47,6 +47,7 @@ public class RESTReceiptTypesController {
         if (oldReceiptType != null) {
             oldReceiptType.setName(receiptType.getName());
             oldReceiptType.setColor(receiptType.getColor());
+            oldReceiptType.setMaxBudget(receiptType.getMaxBudget());
             userService.save(user);
             return oldReceiptType;
         }
