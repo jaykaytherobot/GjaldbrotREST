@@ -42,8 +42,12 @@ public class JSONWriter {
         for(int i = 0; i < receiptTypes.size(); i++) {
             String receiptTypeName = receiptTypes.get(i).getName();
             int receiptColor = receiptTypes.get(i).getColor();
+            int typeMax = receiptTypes.get(i).getMaxBudget();
             int amount = amounts[i];
-            json += "{\"name\":\"" + receiptTypeName + "\",\"amount\":\"" + amount+"\", \"color\": \"" + receiptColor +"\"}";
+            json += "{\"name\":\"" + receiptTypeName
+                    + "\",\"amount\":\"" + amount
+                    +"\", \"color\": \"" + receiptColor
+                    +"\", \"maxBudget\":\""+typeMax+"\"}";
             if (i < receiptTypes.size() - 1) {
                 json += ",";
             }
