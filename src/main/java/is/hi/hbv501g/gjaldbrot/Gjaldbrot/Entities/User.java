@@ -88,6 +88,7 @@ public class User {
 
     public Receipt getReceipt(Long id) {
         for (Receipt r: this.receipts) {
+            System.out.println("Internal id: "+r.getId() + "; external id: "+id);
             if (r.getId().equals(id)) {
                 return r;
             }
